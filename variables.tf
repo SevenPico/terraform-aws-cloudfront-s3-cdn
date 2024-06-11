@@ -526,19 +526,19 @@ variable "block_origin_public_access_enabled" {
   description = "When set to 'true' the s3 origin bucket will have public access block enabled"
 }
 
-variable "s3_access_logging_enabled" {
-  type        = bool
-  default     = null
-  description = <<-EOF
-    Set `true` to deliver S3 Access Logs to the `s3_access_log_bucket_name` bucket.
-    Defaults to `false` if `s3_access_log_bucket_name` is empty (the default), `true` otherwise.
-    Must be set explicitly if the access log bucket is being created at the same time as this module is being invoked.
-    EOF
-}
+//variable "s3_access_logging_enabled" {
+//  type        = bool
+//  default     = null
+//  description = <<-EOF
+//    Set `true` to deliver S3 Access Logs to the `s3_access_log_bucket_name` bucket.
+//    Defaults to `false` if `s3_access_log_bucket_name` is empty (the default), `true` otherwise.
+//    Must be set explicitly if the access log bucket is being created at the same time as this module is being invoked.
+//    EOF
+//}
 
 variable "s3_access_log_bucket_name" {
   type        = string # diff hint
-  default     = ""     # diff hint
+  default     = null     # diff hint
   description = "Name of the existing S3 bucket where S3 Access Logs will be delivered. Default is not to enable S3 Access Logging."
 }
 
@@ -554,11 +554,11 @@ variable "s3_object_ownership" {
   description = "Specifies the S3 object ownership control on the origin bucket. Valid values are `ObjectWriter`, `BucketOwnerPreferred`, and 'BucketOwnerEnforced'."
 }
 
-variable "cloudfront_access_logging_enabled" {
-  type        = bool
-  default     = true
-  description = "Set true to enable delivery of Cloudfront Access Logs to an S3 bucket"
-}
+//variable "cloudfront_access_logging_enabled" {
+//  type        = bool
+//  default     = true
+//  description = "Set true to enable delivery of Cloudfront Access Logs to an S3 bucket"
+//}
 
 variable "cloudfront_access_log_create_bucket" {
   type        = bool
@@ -581,7 +581,7 @@ variable "extra_logs_attributes" {
 
 variable "cloudfront_access_log_bucket_name" {
   type        = string # diff hint
-  default     = ""     # diff hint
+  default     = null     # diff hint
   description = <<-EOT
     When `cloudfront_access_log_create_bucket` is `false`, this is the name of the existing S3 Bucket where
     Cloudfront Access Logs are to be delivered and is required. IGNORED when `cloudfront_access_log_create_bucket` is `true`.
@@ -633,31 +633,6 @@ variable "origin_groups" {
 }
 
 # Variables below here are DEPRECATED and should not be used anymore
-
-variable "access_log_bucket_name" {
-  type        = string
-  default     = null
-  description = "DEPRECATED. Use `s3_access_log_bucket_name` instead."
-}
-
-variable "logging_enabled" {
-  type        = bool
-  default     = null
-  description = "DEPRECATED. Use `cloudfront_access_logging_enabled` instead."
-}
-
-variable "log_include_cookies" {
-  type        = bool
-  default     = null
-  description = "DEPRECATED. Use `cloudfront_access_log_include_cookies` instead."
-}
-
-variable "log_prefix" {
-  type        = string
-  default     = null
-  description = "DEPRECATED. Use `cloudfront_access_log_prefix` instead."
-}
-
 variable "realtime_log_config_arn" {
   type        = string
   default     = null
