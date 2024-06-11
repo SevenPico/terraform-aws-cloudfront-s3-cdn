@@ -48,9 +48,7 @@ locals {
   override_origin_bucket_policy = local.enabled && var.override_origin_bucket_policy
 
   lookup_cf_log_bucket = local.cloudfront_access_logging_enabled
-  cf_log_bucket_domain = local.cloudfront_access_logging_enabled ? (
-    local.lookup_cf_log_bucket ? data.aws_s3_bucket.cf_logs[0].bucket_domain_name : module.logs.bucket_domain_name
-  ) : ""
+  cf_log_bucket_domain = local.cloudfront_access_logging_enabled ? data.aws_s3_bucket.cf_logs[0].bucket_domain_name : ""
 
   use_default_acm_certificate = var.acm_certificate_arn == ""
   minimum_protocol_version    = var.minimum_protocol_version == "" ? (local.use_default_acm_certificate ? "TLSv1" : "TLSv1.2_2019") : var.minimum_protocol_version

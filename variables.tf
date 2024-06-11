@@ -85,41 +85,41 @@ variable "comment" {
   description = "Comment for the CloudFront distribution"
 }
 
-variable "log_standard_transition_days" {
-  type        = number
-  default     = 30
-  description = <<-EOT
-    Number of days after object creation to move Cloudfront Access Log objects to the infrequent access tier.
-    Only effective if `cloudfront_access_log_create_bucket` is `true`.
-    EOT
-}
-
-variable "log_glacier_transition_days" {
-  type        = number
-  default     = 60
-  description = <<-EOT
-    Number of days after object creation to move Cloudfront Access Log objects to the glacier tier.
-    Only effective if `cloudfront_access_log_create_bucket` is `true`.
-    EOT
-}
-
-variable "log_expiration_days" {
-  type        = number
-  default     = 90
-  description = <<-EOT
-    Number of days after object creation to expire Cloudfront Access Log objects.
-    Only effective if `cloudfront_access_log_create_bucket` is `true`.
-    EOT
-}
-
-variable "log_versioning_enabled" {
-  type        = bool
-  default     = false
-  description = <<-EOT
-    Set `true` to enable object versioning in the created Cloudfront Access Log S3 Bucket.
-    Only effective if `cloudfront_access_log_create_bucket` is `true`.
-    EOT
-}
+//variable "log_standard_transition_days" {
+//  type        = number
+//  default     = 30
+//  description = <<-EOT
+//    Number of days after object creation to move Cloudfront Access Log objects to the infrequent access tier.
+//    Only effective if `cloudfront_access_log_create_bucket` is `true`.
+//    EOT
+//}
+//
+//variable "log_glacier_transition_days" {
+//  type        = number
+//  default     = 60
+//  description = <<-EOT
+//    Number of days after object creation to move Cloudfront Access Log objects to the glacier tier.
+//    Only effective if `cloudfront_access_log_create_bucket` is `true`.
+//    EOT
+//}
+//
+//variable "log_expiration_days" {
+//  type        = number
+//  default     = 90
+//  description = <<-EOT
+//    Number of days after object creation to expire Cloudfront Access Log objects.
+//    Only effective if `cloudfront_access_log_create_bucket` is `true`.
+//    EOT
+//}
+//
+//variable "log_versioning_enabled" {
+//  type        = bool
+//  default     = false
+//  description = <<-EOT
+//    Set `true` to enable object versioning in the created Cloudfront Access Log S3 Bucket.
+//    Only effective if `cloudfront_access_log_create_bucket` is `true`.
+//    EOT
+//}
 
 variable "forward_query_string" {
   type        = bool

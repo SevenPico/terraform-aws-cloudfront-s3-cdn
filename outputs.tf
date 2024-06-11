@@ -73,11 +73,6 @@ output "s3_bucket_policy" {
   description = "Final computed S3 bucket policy"
 }
 
-output "logs" {
-  value       = module.logs
-  description = "Log bucket resource"
-}
-
 output "aliases" {
   value       = var.aliases
   description = "Aliases of the CloudFront distribution."
