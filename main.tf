@@ -642,8 +642,8 @@ resource "aws_cloudfront_distribution" "default" {
 }
 
 module "dns" {
-  source           = "cloudposse/route53-alias/aws"
-  version          = "0.13.0"
+  source           = "SevenPico/route53-alias/aws"
+  version          = "1.0.1"
   enabled          = (local.enabled && var.dns_alias_enabled)
   aliases          = var.aliases
   allow_overwrite  = var.dns_allow_overwrite
