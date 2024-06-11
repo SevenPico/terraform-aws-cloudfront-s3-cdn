@@ -1,17 +1,17 @@
 locals {
-  enabled = module.this.enabled
+  enabled = module.context.enabled
 
   # Encapsulate logic here so that it is not lost/scattered among the configuration
   website_enabled           = local.enabled && var.website_enabled
   website_password_enabled  = local.website_enabled && var.s3_website_password_enabled
   s3_origin_enabled         = local.enabled && !var.website_enabled
   create_s3_origin_bucket   = local.enabled && var.origin_bucket == null
-  s3_access_logging_enabled = local.enabled && (var.s3_access_logging_enabled == null ? length(var.s3_access_log_bucket_name) > 0 : var.s3_access_logging_enabled)
-  create_cf_log_bucket      = local.cloudfront_access_logging_enabled && local.cloudfront_access_log_create_bucket
+  s3_access_logging_enabled = var.s3_access_log_bucket_name != null
+  cloudfront_access_logging_enabled     = var.cloudfront_access_log_bucket_name != null
 
   create_cloudfront_origin_access_identity = local.enabled && length(compact([var.cloudfront_origin_access_identity_iam_arn])) == 0 # "" or null
 
-  origin_id   = module.this.id
+  origin_id   = module.context.id
   origin_path = coalesce(var.origin_path, "/")
   # Collect the information for whichever S3 bucket we are using as the origin
   origin_bucket_placeholder = {
@@ -47,7 +47,7 @@ locals {
 
   override_origin_bucket_policy = local.enabled && var.override_origin_bucket_policy
 
-  lookup_cf_log_bucket = local.cloudfront_access_logging_enabled && !local.cloudfront_access_log_create_bucket
+  lookup_cf_log_bucket = local.cloudfront_access_logging_enabled
   cf_log_bucket_domain = local.cloudfront_access_logging_enabled ? (
     local.lookup_cf_log_bucket ? data.aws_s3_bucket.cf_logs[0].bucket_domain_name : module.logs.bucket_domain_name
   ) : ""
@@ -104,12 +104,12 @@ data "aws_region" "current" {
 }
 
 module "origin_label" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0"
+  source  = "SevenPico/context/null"
+  version = "2.0.0"
 
   attributes = var.extra_origin_attributes
 
-  context = module.this.context
+  context = module.context.self
 }
 
 resource "aws_cloudfront_origin_access_identity" "default" {
@@ -260,7 +260,7 @@ resource "aws_s3_bucket" "origin" {
   dynamic "logging" {
     for_each = local.s3_access_logging_enabled ? [1] : []
     content {
-      target_bucket = local.s3_access_log_bucket_name
+      target_bucket = var.s3_access_log_bucket_name
       target_prefix = coalesce(var.s3_access_log_prefix, "logs/${local.origin_id}/")
     }
   }
@@ -364,34 +364,6 @@ resource "time_sleep" "wait_for_aws_s3_bucket_settings" {
   ]
 }
 
-module "logs" {
-  source                   = "cloudposse/s3-log-storage/aws"
-  version                  = "1.4.2"
-  enabled                  = local.create_cf_log_bucket
-  attributes               = var.extra_logs_attributes
-  allow_ssl_requests_only  = true
-  lifecycle_prefix         = local.cloudfront_access_log_prefix
-  standard_transition_days = var.log_standard_transition_days
-  glacier_transition_days  = var.log_glacier_transition_days
-  expiration_days          = var.log_expiration_days
-  force_destroy            = var.origin_force_destroy
-  versioning_enabled       = var.log_versioning_enabled
-
-  # See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html
-  s3_object_ownership = "BucketOwnerPreferred"
-  acl                 = null
-  grants = [
-    {
-      # Canonical ID for the awslogsdelivery account
-      id          = "c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0"
-      permissions = ["FULL_CONTROL"]
-      type        = "CanonicalUser"
-      uri         = null
-    },
-  ]
-
-  context = module.this.context
-}
 
 data "aws_s3_bucket" "origin" {
   count  = local.enabled && (var.origin_bucket != null) ? 1 : 0
@@ -427,9 +399,9 @@ resource "aws_cloudfront_distribution" "default" {
     for_each = local.cloudfront_access_logging_enabled ? ["true"] : []
 
     content {
-      include_cookies = local.cloudfront_access_log_include_cookies
+      include_cookies = var.cloudfront_access_log_include_cookies
       bucket          = local.cf_log_bucket_domain
-      prefix          = local.cloudfront_access_log_prefix
+      prefix          = var.cloudfront_access_log_prefix
     }
   }
 
@@ -438,7 +410,7 @@ resource "aws_cloudfront_distribution" "default" {
   dynamic "origin_group" {
     for_each = var.origin_groups
     content {
-      origin_id = "${module.this.id}-group[${origin_group.key}]"
+      origin_id = "${module.context.id}-group[${origin_group.key}]"
 
       failover_criteria {
         status_codes = origin_group.value.failover_criteria
@@ -666,7 +638,7 @@ resource "aws_cloudfront_distribution" "default" {
   web_acl_id          = var.web_acl_id
   wait_for_deployment = var.wait_for_deployment
 
-  tags = module.this.tags
+  tags = module.context.tags
 }
 
 module "dns" {
@@ -681,5 +653,5 @@ module "dns" {
   target_zone_id   = try(aws_cloudfront_distribution.default[0].hosted_zone_id, "")
   ipv6_enabled     = var.ipv6_enabled
 
-  context = module.this.context
+  context = module.context.self
 }
