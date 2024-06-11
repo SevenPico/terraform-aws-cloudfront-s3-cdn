@@ -559,24 +559,24 @@ variable "s3_object_ownership" {
 //  default     = true
 //  description = "Set true to enable delivery of Cloudfront Access Logs to an S3 bucket"
 //}
+//
+//variable "cloudfront_access_log_create_bucket" {
+//  type        = bool
+//  default     = true
+//  description = <<-EOT
+//    When `true` and `cloudfront_access_logging_enabled` is also true, this module will create a new,
+//    separate S3 bucket to receive Cloudfront Access Logs.
+//    EOT
+//}
 
-variable "cloudfront_access_log_create_bucket" {
-  type        = bool
-  default     = true
-  description = <<-EOT
-    When `true` and `cloudfront_access_logging_enabled` is also true, this module will create a new,
-    separate S3 bucket to receive Cloudfront Access Logs.
-    EOT
-}
-
-variable "extra_logs_attributes" {
-  type        = list(string)
-  default     = ["logs"]
-  description = <<-EOT
-    Additional attributes to add to the end of the generated Cloudfront Access Log S3 Bucket name.
-    Only effective if `cloudfront_access_log_create_bucket` is `true`.
-    EOT
-}
+//variable "extra_logs_attributes" {
+//  type        = list(string)
+//  default     = ["logs"]
+//  description = <<-EOT
+//    Additional attributes to add to the end of the generated Cloudfront Access Log S3 Bucket name.
+//    Only effective if `cloudfront_access_log_create_bucket` is `true`.
+//    EOT
+//}
 
 
 variable "cloudfront_access_log_bucket_name" {
